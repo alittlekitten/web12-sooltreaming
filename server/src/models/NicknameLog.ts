@@ -1,9 +1,5 @@
-import { Schema, model, SchemaDefinitionProperty } from 'mongoose';
-
-interface NicknameLog {
-  userId: SchemaDefinitionProperty<string>;
-  nickname: string;
-}
+import { Schema, model } from 'mongoose';
+import type { NicknameLog } from '@src/types';
 
 const nicknameLogSchema = new Schema<NicknameLog>(
   {
@@ -11,6 +7,7 @@ const nicknameLogSchema = new Schema<NicknameLog>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      index: true,
     },
     nickname: {
       type: String,

@@ -1,13 +1,7 @@
 import React from 'react';
-import type { iconPropsType } from '@components/icons';
+import type { IconPropType } from '@ts-types/components/icons';
 
-const HostIcon = ({
-  className,
-  width,
-  height,
-  fill,
-  stroke,
-}: iconPropsType): React.ReactElement => {
+const HostIcon = ({ className, width, height, fill, stroke }: IconPropType): React.ReactElement => {
   return (
     <svg
       className={className ?? ''}

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { COLOR, Z_INDEX } from '@constant/style';
-import type { ModalPosType } from '@components/custom/Modal';
+import type { ModalPosType } from '@ts-types/components/custom';
 
-const getPositionCSS = (pos: ModalPosType) => {
+const getPositionCSS = (pos: ModalPosType): string => {
   return Object.entries(pos)
     .map(([key, value]) =>
       ['top', 'left', 'right', 'bottom'].includes(key) ? `${key}: ${value};` : '',

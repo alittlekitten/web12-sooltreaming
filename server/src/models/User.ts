@@ -1,32 +1,17 @@
 import { Schema, model } from 'mongoose';
-
-export type UserType = {
-  githubId: string;
-  naverId: string;
-  nickname: string;
-  imgUrl: string;
-
-  chatCount: number;
-  hookCount: number;
-  pollCount: number;
-  closeupCount: number;
-  dieCount: number;
-  speakCount: number;
-  starterCount: number;
-  totalSeconds: number;
-
-  title: Array<String>;
-
-  sendFriend: Array<String>;
-  receiveFriend: Array<String>;
-  friend: Array<String>;
-};
+import type { UserType } from '@src/types';
 
 const userSchema = new Schema<UserType>(
   {
     // User
-    githubId: String,
-    naverId: String,
+    githubId: {
+      type: String,
+      index: true,
+    },
+    naverId: {
+      type: String,
+      index: true,
+    },
     nickname: {
       type: String,
       required: true,
@@ -57,7 +42,7 @@ const userSchema = new Schema<UserType>(
       type: Number,
       default: 0,
     },
-    speakCount: {
+    cheersCount: {
       type: Number,
       default: 0,
     },

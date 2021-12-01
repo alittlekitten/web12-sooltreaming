@@ -3,22 +3,22 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@src/store';
 import UpdownGame from '@components/room/games/UpdownGame';
 import useGameSocket from '@hooks/socket/useGameSocket';
+import type { GamesPropType } from '@ts-types/components/room';
+import LiarGame from '@components/room/games/LiarGame';
 
-type GamesPropTypes = {
-  startGamesRef: React.MutableRefObject<Object>;
-};
-
-const Games: React.FC<GamesPropTypes> = ({ startGamesRef }) => {
+const Games: React.FC<GamesPropType> = ({ startGamesRef }): React.ReactElement => {
   const currentGame = useSelector((state: RootState) => state.room.currentGame.title);
+  const { GameStartHandlerList, randomNumRef, keywordRef } = useGameSocket();
 
-  const { GameStartHandlerList } = useGameSocket();
   useEffect(() => {
     startGamesRef.current = GameStartHandlerList;
   }, []);
 
   switch (currentGame) {
     case '업다운':
-      return <UpdownGame />;
+      return <UpdownGame randomNumRef={randomNumRef} />;
+    case '라이어':
+      return <LiarGame keywordRef={keywordRef} />;
     default:
       return <></>;
   }

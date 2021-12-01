@@ -1,23 +1,22 @@
 import {
-  Friend,
+  FriendItemBox,
   LeftBox,
   RightBox,
 } from '@components/user-information/friend-list/FriendItem.style';
+import type { FriendType } from '@ts-types/components/user-information';
 
-type FriendType = {
-  imgUrl: string;
-  nickname: string;
-  children: JSX.Element[] | JSX.Element;
-};
-
-export const FriendItem: React.FC<FriendType> = ({ imgUrl, nickname, children }) => {
+export const FriendItem: React.FC<FriendType> = ({
+  imgUrl,
+  nickname,
+  children,
+}): React.ReactElement => {
   return (
-    <Friend>
+    <FriendItemBox>
       <LeftBox>
         <img src={imgUrl} alt="프로필사진" />
         <p>{nickname}</p>
       </LeftBox>
       <RightBox>{children}</RightBox>
-    </Friend>
+    </FriendItemBox>
   );
 };

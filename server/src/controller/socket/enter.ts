@@ -1,5 +1,4 @@
-import { Socket } from 'socket.io';
-import type { roomType } from '@loader/socket';
+import { ERROR } from '@src/constant';
 import {
   ENTER_ROOM,
   ENTER_ROOM_ERROR,
@@ -12,17 +11,14 @@ import {
   CLOSEUP_BREAK,
   TICKET_FAILURE,
 } from 'sooltreaming-domain/constant/socketEvent';
+import type { EnterPropType, SocketPropType } from '@src/types';
 
-export type TargetInfoType = {
-  code: string;
-};
-
-const enter = ({ io, socket, rooms }: { io: any; socket: Socket; rooms: roomType }) => {
+const enter = ({ io, socket, rooms }: EnterPropType): SocketPropType => {
   const targetInfo = { code: '' };
 
   socket.on(ENTER_ROOM, ({ chatRoomCode: code, user, userDevices }) => {
-    if (!(code in rooms)) return socket.emit(ENTER_ROOM_ERROR, '존재하지 않는 방입니다.');
-    if (!rooms[code].isOpen) return socket.emit(ENTER_ROOM_ERROR, '입장이 제한된 방입니다.');
+    if (!(code in rooms)) return socket.emit(ENTER_ROOM_ERROR, ERROR.NOT_EXIST_ROOM);
+    if (!rooms[code].isOpen) return socket.emit(ENTER_ROOM_ERROR, ERROR.UNAUTHORIZED_ROOM);
     targetInfo.code = code;
 
     const sid = socket.id;

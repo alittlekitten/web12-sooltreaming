@@ -1,6 +1,4 @@
-import { Socket } from 'socket.io';
-import type { roomType } from '@loader/socket';
-import type { TargetInfoType } from '@controller/socket/enter';
+import { ERROR } from '@src/constant';
 import {
   CONTROL_AUTHORITY_ERROR,
   CONTROL_TOGGLE_ENTRY,
@@ -10,23 +8,14 @@ import {
   STREAM_FORCE_CHANGE_AUDIO,
   TICKET_FAILURE,
 } from 'sooltreaming-domain/constant/socketEvent';
+import type { SocketPropType } from '@src/types';
 
-const control = ({
-  io,
-  socket,
-  rooms,
-  targetInfo,
-}: {
-  io: any;
-  socket: Socket;
-  rooms: roomType;
-  targetInfo: TargetInfoType;
-}) => {
+const control = ({ io, socket, rooms, targetInfo }: SocketPropType): SocketPropType => {
   socket.on(CONTROL_TOGGLE_ENTRY, () => {
     const { code } = targetInfo;
 
     if (rooms[code].hostSID !== socket.id)
-      return socket.emit(CONTROL_AUTHORITY_ERROR, '당신은 방장이 아닙니다.');
+      return socket.emit(CONTROL_AUTHORITY_ERROR, ERROR.PERMISSION_DENIED);
 
     const state = rooms[code].isOpen;
     if (state) {
@@ -44,7 +33,7 @@ const control = ({
     const { code } = targetInfo;
 
     if (rooms[code].hostSID !== socket.id)
-      return socket.emit(CONTROL_AUTHORITY_ERROR, '당신은 방장이 아닙니다.');
+      return socket.emit(CONTROL_AUTHORITY_ERROR, ERROR.PERMISSION_DENIED);
     const targetRoom = rooms[code];
     targetRoom.usersDevices[sid] = { ...targetRoom.usersDevices[sid], isVideoOn };
     io.to(code).emit(STREAM_FORCE_CHANGE_VIDEO, { sid, isVideoOn });
@@ -54,7 +43,7 @@ const control = ({
     const { code } = targetInfo;
 
     if (rooms[code].hostSID !== socket.id)
-      return socket.emit(CONTROL_AUTHORITY_ERROR, '당신은 방장이 아닙니다.');
+      return socket.emit(CONTROL_AUTHORITY_ERROR, ERROR.PERMISSION_DENIED);
     const targetRoom = rooms[code];
     targetRoom.usersDevices[sid] = { ...targetRoom.usersDevices[sid], isAudioOn };
     io.to(code).emit(STREAM_FORCE_CHANGE_AUDIO, { sid, isAudioOn });

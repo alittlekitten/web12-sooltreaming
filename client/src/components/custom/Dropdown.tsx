@@ -1,15 +1,19 @@
 import React, { useState, useRef } from 'react';
-import { Container, ItemList, ItemListBox, ToggleButton } from './Dropdown.style.js';
+import {
+  Container,
+  ItemList,
+  ItemListBox,
+  ToggleButton,
+} from '@components/custom/Dropdown.style.js';
+import type { DropdownPropType } from '@ts-types/components/custom';
 
-interface dropdownPropTypes {
-  renderButton: (prop?: any) => React.ReactNode;
-  renderItem: (prop?: any) => React.ReactNode;
-  itemList: any[];
-}
-
-const Dropdown: React.FC<dropdownPropTypes> = ({ renderButton, renderItem, itemList }) => {
-  const [isActive, setActive] = useState(false);
-  const isMouseOn = useRef(false);
+const Dropdown: React.FC<DropdownPropType> = ({
+  renderButton,
+  renderItem,
+  itemList,
+}): React.ReactElement => {
+  const [isActive, setActive] = useState<boolean>(false);
+  const isMouseOn = useRef<boolean>(false);
 
   const toggleDropdown = () => {
     setActive((prev) => !prev);

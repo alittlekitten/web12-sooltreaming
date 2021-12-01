@@ -2,14 +2,9 @@ import React from 'react';
 import { FlexBox } from '@components/room/scaffold/Voters.style';
 import { VoterIcon } from '@components/icons';
 import { COLOR } from '@constant/style';
+import type { VotersPropType } from '@ts-types/components/room';
 
-type VotersPropType = {
-  total: number;
-  approves: number;
-  rejects: number;
-};
-
-const Voters: React.FC<VotersPropType> = ({ total, approves, rejects }) => {
+const Voters: React.FC<VotersPropType> = ({ total, approves, rejects }): React.ReactElement => {
   return (
     <FlexBox>
       {Array.from({ length: total }, (_, index) => {

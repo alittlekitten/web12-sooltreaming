@@ -1,10 +1,10 @@
-export const userCount = [
+export const userCount: string[] = [
   'chatCount',
   'hookCount',
   'pollCount',
   'closeupCount',
   'dieCount',
-  'speakCount',
+  'cheersCount',
   'starterCount',
   'totalSeconds',
 ];

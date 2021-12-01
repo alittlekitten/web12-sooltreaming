@@ -3,18 +3,13 @@ import Dropdown from '@components/custom/Dropdown';
 import { DownIcon } from '@components/icons';
 import { MenuButton, MenuItem } from '@components/setting/SettingDropdown.style';
 import { filterLabel } from '@utils/regExpr';
+import type { SettingDropdownPropType } from '@ts-types/components/setting';
 
-type settingDropdownTypeProps = {
-  menuList: MediaDeviceInfo[];
-  selected: MediaDeviceInfo | any;
-  setSelected: any;
-};
-
-const SettingDropdown: React.FC<settingDropdownTypeProps> = ({
+const SettingDropdown: React.FC<SettingDropdownPropType> = ({
   menuList,
   selected,
   setSelected,
-}) => {
+}): React.ReactElement => {
   const choiceMenu = (toggleDropdown, item) => () => {
     setSelected(item);
     toggleDropdown();

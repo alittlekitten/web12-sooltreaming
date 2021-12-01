@@ -7,22 +7,24 @@ import { RootState } from '@src/store';
 import { API } from '@src/api';
 
 import {
-  DeleteChangePressSection,
-  ChangeData,
+  ModalContents,
   NewNicknameInput,
-  NicknameChangeAcceptIconWrapper,
-  RejectIconWrapper,
-  ProfileSquare,
-  ProfileSquareWrapper,
+  ImageContainer,
   DeleteBox,
+  AcceptButton,
+  CloseButton,
+  ButtonContainer,
 } from '@components/user-information/modals/NickChangeModal.style';
 import { Header, Button } from '@components/user-information/modals/index.style';
-import { GreenXButtonIcon, CloseIcon, AcceptIcon, ChangeNicknameIcon } from '@components/icons';
+import { GreenXButtonIcon, ChangeNicknameIcon } from '@components/icons';
+import {
+  FILE_PUBLIC_URL,
+  DEFAULT_PROFILE_IMAGE,
+  NCP_ENDPOINT,
+  NCP_BUCKET,
+} from 'sooltreaming-domain/constant/addition';
 
-import { BACK_BASE_URL } from '@constant/envs';
-import { FILE_PUBLIC_URL, DEFAULT_PROFILE_IMAGE } from 'sooltreaming-domain/constant/addition';
-
-const NickChangeModal = () => {
+const NickChangeModal: React.FC = (): React.ReactElement => {
   const dispatch = useDispatch();
   const nickname = useSelector((state: RootState) => state.user.nickname);
   const imgUrl = useSelector((state: RootState) => state.user.imgUrl);
@@ -31,39 +33,41 @@ const NickChangeModal = () => {
   const [preview, setPreview] = useState<any>(imgUrl);
   const [nickChanged, setNickChanged] = useState<boolean>(false);
   const [imgChanged, setImgChanged] = useState<boolean>(false);
-
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  // 모달 닫기
   const closeModal = () => setIsOpen(false);
+
   // 닉네임 변경 감지
-  const checkChanged = (e) => {
+  const checkChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.value !== nickname) setNickChanged(true);
     else setNickChanged(false);
   };
 
   // 이미지 프리뷰 업로드 함수
-  const uploadImage = useCallback((e) => {
+  const uploadImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const file = reader.result;
       if (file) setPreview(file);
     };
-    if (e.target.files[0]) {
+    if (e.target.files && e.target.files[0]) {
       reader.readAsDataURL(e.target.files[0]);
     }
   }, []);
 
   // 이미지 삭제 함수
-  const deleteImage = useCallback(async () => {
+  const deleteImage = useCallback(async (): Promise<void> => {
     const dataTransfer = new DataTransfer();
     if (!newImageData.current || !newImageData.current?.files) return;
     else {
       newImageData.current.files = dataTransfer.files;
-      setPreview(`${BACK_BASE_URL}${FILE_PUBLIC_URL}/${DEFAULT_PROFILE_IMAGE}`);
+      setPreview(`${NCP_ENDPOINT}/${NCP_BUCKET}${FILE_PUBLIC_URL}/${DEFAULT_PROFILE_IMAGE}`);
     }
   }, []);
 
   // 닉네임 변경 함수
-  const changeNickname = async () => {
+  const changeNickname = async (): Promise<void> => {
     const newNickname = newNicknameData.current?.value;
     if (newNickname === nickname || !newNickname) return;
 
@@ -72,7 +76,7 @@ const NickChangeModal = () => {
   };
 
   // 이미지 서버에 전송하는 함수
-  const requestChangeUserImage = async () => {
+  const requestChangeUserImage = async (): Promise<void> => {
     if (!newImageData.current) return;
     if (preview === imgUrl) return;
 
@@ -85,30 +89,30 @@ const NickChangeModal = () => {
     dispatch(setImage(test));
   };
 
-  const changeProfile = () => {
+  const profileChangeCallback = (): void => {
+    setNickChanged(false);
+    setImgChanged(false);
+    closeModal();
+  };
+
+  const changeProfile = (): void => {
     if (!nickChanged && imgChanged) {
       Promise.all([requestChangeUserImage()]).then(() => {
-        setNickChanged(false);
-        setImgChanged(false);
-        closeModal();
+        profileChangeCallback();
       });
     } else if (nickChanged && !imgChanged) {
       Promise.all([changeNickname()]).then(() => {
-        setNickChanged(false);
-        setImgChanged(false);
-        closeModal();
+        profileChangeCallback();
       });
     } else if (nickChanged && imgChanged) {
       Promise.all([changeNickname(), requestChangeUserImage()]).then(() => {
-        setNickChanged(false);
-        setImgChanged(false);
-        closeModal();
+        profileChangeCallback();
       });
     }
   };
 
   // 닫기 버튼 클릭시
-  const rejectProfile = () => {
+  const rejectProfile = (): void => {
     setNickChanged(false);
     setImgChanged(false);
     setPreview(imgUrl);
@@ -131,25 +135,21 @@ const NickChangeModal = () => {
         renderCenter={true}
         absolutePos={{ top: '50%', left: '50%' }}
       >
-        <Header>
-          <h2>프로필 변경하기</h2>
-        </Header>
-        <ChangeData>
-          <ProfileSquareWrapper>
-            <ProfileSquare>
-              <img src={preview} alt="" />
-              <input
-                ref={newImageData}
-                type="file"
-                style={{ width: 150, height: 150, opacity: 0, cursor: 'pointer' }}
-                accept="image/jpeg, image/png"
-                onChange={uploadImage}
-              />
-              <DeleteBox onClick={deleteImage}>
-                <GreenXButtonIcon />
-              </DeleteBox>
-            </ProfileSquare>
-          </ProfileSquareWrapper>
+        <Header>프로필 변경하기</Header>
+        <ModalContents>
+          <ImageContainer>
+            <img src={preview} alt="" />
+            <input
+              ref={newImageData}
+              type="file"
+              style={{ width: 150, height: 150, opacity: 0, cursor: 'pointer' }}
+              accept="image/jpeg, image/png"
+              onChange={uploadImage}
+            />
+            <DeleteBox onClick={deleteImage}>
+              <GreenXButtonIcon />
+            </DeleteBox>
+          </ImageContainer>
 
           <NewNicknameInput
             ref={newNicknameData}
@@ -158,19 +158,13 @@ const NickChangeModal = () => {
             onChange={checkChanged}
             maxLength={15}
           />
-        </ChangeData>
-        <DeleteChangePressSection>
-          <NicknameChangeAcceptIconWrapper
-            onClick={changeProfile}
-            nickChanged={nickChanged}
-            imgChanged={imgChanged}
-          >
-            <AcceptIcon />
-          </NicknameChangeAcceptIconWrapper>
-          <RejectIconWrapper onClick={rejectProfile}>
-            <CloseIcon />
-          </RejectIconWrapper>
-        </DeleteChangePressSection>
+        </ModalContents>
+        <ButtonContainer>
+          <AcceptButton onClick={changeProfile} disabled={!(nickChanged || imgChanged)}>
+            확인
+          </AcceptButton>
+          <CloseButton onClick={rejectProfile}>닫기</CloseButton>
+        </ButtonContainer>
       </Modal>
     </>
   );
